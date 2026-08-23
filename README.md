@@ -3,355 +3,659 @@
 
 ![alt text](Logo_Trimatch.jpeg)
 
-# Struktur Laporan — Klasifikasi Bentuk Wajah Pria
+# Final Project Student Hacktiv8 Batch HCK-042 FTDS
 
-Kerangka penulisan berdasarkan seluruh eksperimen v1–v15, lengkap dengan
-angka yang sudah terverifikasi dan catatan mana yang boleh/tidak boleh
-dikutip.
+*Project ini dibuat sebagai bukti penerapan pembelajaran Data Science, Machine Learning, Deep Learning, Computer Vision, serta deployment aplikasi dalam Final Project Hacktiv8.*
 
 ---
 
-## Angka kunci (rujukan cepat)
+* Anggota Proyek:
 
-**Hasil akhir — pakai ini sebagai angka utama**
-
-| Metrik | Nilai |
-|---|---|
-| Akurasi OOF 5-fold | **61,11% ± 1,29** (n = 1139) |
-| Top-2 accuracy | 82,88% |
-| Tebak acak | 25,00% |
-| Tebak kelas mayoritas | 27,66% |
-
-**Per kelas**
-
-| Kelas | Precision | Recall | F1 |
-|---|---|---|---|
-| ovale | 0,629 | 0,511 | 0,564 |
-| rectangular | 0,600 | 0,710 | 0,651 |
-| round | 0,822 | 0,503 | 0,624 |
-| square | 0,512 | 0,755 | 0,610 |
-
-**Dataset**
-
-| Tahap | Jumlah |
-|---|---|
-| Gambar mentah | 1312 |
-| Label diperbaiki dari nama file | 59 |
-| Gambar kembar dibuang (dHash) | 173 |
-| Dataset final | 1139 |
-| Wajah berhasil terdeteksi | 98,9% |
+  * Muhammad Cesar Rivaldo
+  * Muhammad Rafi Addien
+  * Muhammad Zaky Ramadhan
+  * Muhammad Zulyandhika
 
 ---
 
-## Bab 1 — Pendahuluan
+## Tentang Proyek Akhir
 
-**1.1 Latar Belakang.** Bentuk wajah dipakai di industri penataan rambut dan
-kacamata sebagai dasar rekomendasi gaya. Otomatisasi klasifikasinya
-memungkinkan aplikasi rekomendasi mandiri.
+### **Trimatch: Your Style, Your Cut**
 
-**1.2 Rumusan Masalah.**
-1. Seberapa akurat CNN transfer learning mengklasifikasi empat bentuk wajah
-   pria?
-2. Langkah pra-pemrosesan mana yang benar-benar berkontribusi?
-3. Apakah kualitas anotasi dataset membatasi akurasi yang bisa dicapai?
+**Trimatch** adalah aplikasi berbasis Computer Vision yang dirancang untuk mengklasifikasikan bentuk wajah pria ke dalam empat kategori, yaitu **ovale**, **rectangular**, **round**, dan **square**.
 
-Pertanyaan 2 dan 3 adalah yang membedakan laporanmu dari kebanyakan skripsi
-klasifikasi gambar. Tonjolkan keduanya.
+Hasil klasifikasi kemudian dapat digunakan sebagai dasar untuk memberikan rekomendasi gaya rambut yang sesuai dengan bentuk wajah pengguna.
 
-**1.3 Batasan.** Wajah pria, empat kelas, dataset publik ~1300 gambar,
-satu arsitektur (MobileNetV2).
+Model utama yang digunakan adalah **MobileNetV2** dengan pendekatan **transfer learning** dan **fine-tuning**.
 
 ---
 
-## Bab 2 — Tinjauan Pustaka
+### Latar Belakang
 
-Materi yang perlu dibahas, semuanya sudah kamu pakai:
+Pemilihan gaya rambut merupakan salah satu aspek yang dapat memengaruhi penampilan seseorang. Salah satu faktor yang umum digunakan oleh barber atau hairstylist dalam memberikan rekomendasi adalah bentuk wajah.
 
-- CNN dan transfer learning; arsitektur MobileNetV2 (depthwise separable
-  convolution, inverted residual)
-- Fine-tuning dua tahap dan alasan learning rate kecil di tahap kedua
-- Augmentasi data dan label smoothing
-- **K-fold cross-validation dan out-of-fold prediction** — jelaskan mengapa
-  ini lebih tepat daripada satu split tunggal pada dataset kecil
-- **Perceptual hashing (dHash)** untuk deteksi duplikat
-- **Confident learning** (Northcutt dkk., 2021) untuk deteksi label keliru
-- **Uji McNemar** untuk membandingkan dua klasifikator berpasangan
-- Haar cascade untuk deteksi wajah
+Namun, tidak semua orang dapat menentukan bentuk wajahnya sendiri secara akurat. Perbedaan antara bentuk wajah seperti `ovale`, `round`, `square`, dan `rectangular` juga sering kali tidak memiliki batas visual yang benar-benar jelas.
+
+Oleh karena itu, proyek ini mencoba mengotomatisasi proses identifikasi bentuk wajah menggunakan metode **Deep Learning berbasis Computer Vision**.
+
+Selain membangun model klasifikasi, proyek ini juga berfokus pada kualitas data dan protokol evaluasi. Eksperimen dilakukan untuk mengetahui pengaruh **face cropping**, **koreksi label**, **deduplikasi gambar**, serta kualitas anotasi dataset terhadap performa model.
 
 ---
 
-## Bab 3 — Metodologi
+### Tujuan Pembuatan Aplikasi
 
-### 3.1 Dataset
-Sumber, struktur folder awal (`training_set` / `testing_set`), distribusi
-kelas.
+Tujuan utama dari proyek ini adalah membangun aplikasi yang dapat:
 
-### 3.2 Pra-pemrosesan
-Empat tahap, sajikan sebagai diagram alur:
+1. Mengidentifikasi bentuk wajah pria secara otomatis dari sebuah gambar.
+2. Mengklasifikasikan wajah ke dalam empat kelas:
 
-1. Perbaikan format berkas (banyak `.jpg` yang isinya WEBP)
-2. Koreksi label dari nama berkas — 59 berkas
-3. Face cropping (Haar cascade, margin 35%)
-4. Deduplikasi perceptual (dHash, ambang Hamming 5) — 173 berkas
-
-### 3.3 Protokol Evaluasi
-**Bagian terpenting di bab ini.** Jelaskan dua protokol dan alasan
-pergantiannya (rinciannya di Bab 4.1):
-
-- **Protokol A** — pembagian folder bawaan dataset
-- **Protokol B** — gabungkan seluruh gambar, deduplikasi global, lalu
-  pecah ulang stratified 5-fold dengan prediksi out-of-fold
-
-### 3.4 Arsitektur dan Pelatihan
-MobileNetV2 pra-latih ImageNet → GAP → Dropout 0,25 → Dense 128 → Dropout
-0,15 → Dense 4 (softmax).
-
-Dua tahap: (1) kepala dilatih di atas embedding beku, LR 1e-3;
-(2) fine-tuning 60 layer teratas, LR 1e-5, BatchNorm tetap beku.
-
-Augmentasi: flip horizontal, rotasi 0,06, zoom 0,06. Label smoothing 0,05.
-
-**Sebutkan juga langkah pencegahan kebocoran:** validation set diambil dari
-porsi training (85/15), bukan dari test fold. Ini bukan detail sepele —
-kesalahan itu sempat terjadi di eksperimen v12 dan menaikkan akurasi 2–4
-poin secara semu.
+   * `ovale`
+   * `rectangular`
+   * `round`
+   * `square`
+3. Memberikan dua prediksi bentuk wajah dengan probabilitas tertinggi.
+4. Memberikan rekomendasi gaya rambut berdasarkan hasil klasifikasi bentuk wajah.
+5. Menyediakan proses klasifikasi melalui upload gambar maupun kamera.
+6. Mengetahui pengaruh tahapan preprocessing terhadap performa model.
+7. Mengevaluasi pengaruh kualitas anotasi dan duplikasi gambar terhadap hasil klasifikasi.
 
 ---
 
-## Bab 4 — Hasil dan Pembahasan
+## Dataset
 
-### 4.1 Perbandingan Dua Protokol Evaluasi
+Dataset yang digunakan merupakan dataset publik berisi gambar wajah pria dengan empat kelas bentuk wajah.
 
-Sajikan kedua protokol berdampingan. **Jangan menyembunyikan yang rendah** —
-justru perbedaan inilah temuan utamamu.
+Dataset awal memiliki **1.312 gambar** yang kemudian melalui beberapa tahapan pembersihan sebelum digunakan untuk pelatihan model.
 
-| Protokol | Akurasi | Keterangan |
-|---|---|---|
-| A — split folder bawaan | 39,2% → 44,4% → 43,5% | test 100% dari `testing_set` |
-| B — 5-fold OOF | **61,11% ± 1,29** | seluruh 1139 gambar |
+| Tahap Dataset                          |    Jumlah |
+| -------------------------------------- | --------: |
+| Gambar mentah                          |     1.312 |
+| Label diperbaiki berdasarkan nama file |        59 |
+| Gambar duplikat/nyaris identik dibuang |       173 |
+| Dataset final                          | **1.139** |
+| Wajah berhasil terdeteksi              | **98,9%** |
 
-Kenaikan 17 poin **bukan** karena model jadi lebih pintar. Penjelasannya di
-4.2. Kalimat yang bisa dipakai:
-
-> Kedua protokol mengukur hal yang berbeda. Protokol A mengukur kemampuan
-> model berpindah antar-subhimpunan dataset yang tingkat kesulitannya
-> berbeda; Protokol B mengukur kemampuan klasifikasi bentuk wajah itu
-> sendiri. Untuk menjawab rumusan masalah, Protokol B lebih tepat.
-
-### 4.2 Analisis Asal Gambar
-
-Temuan yang direplikasi **empat kali** pada eksperimen independen:
-
-| Eksperimen | Selisih akurasi | z |
-|---|---|---|
-| v6 | +10,68 poin | 3,40 |
-| v9 | +11,75 poin | 3,73 |
-| v10 | +11,53 poin | 3,67 |
-| v14 (final) | +11,59 poin | 3,62 |
-
-Gambar asal `testing_set` konsisten ~11 poin lebih sulit daripada asal
-`training_set`.
-
-**Hipotesis yang diuji dan ditolak:** pergeseran domain. Sebuah classifier
-biner yang dilatih membedakan asal gambar hanya mencapai 70,18%, sementara
-tebak-kelas-mayoritas sudah 69,10%. Kedua subhimpunan tidak dapat dibedakan
-secara visual, sehingga perbedaan kesulitan bukan berasal dari perbedaan
-proses pengumpulan.
-
-Tulis penolakan hipotesis ini secara eksplisit. Menunjukkan dugaan yang
-diuji lalu gugur adalah nilai tambah, bukan kekurangan.
-
-### 4.3 Studi Ablasi
-
-Dari eksperimen v11, kontribusi tiap langkah pra-pemrosesan diukur terpisah:
-
-| Langkah | Efek |
-|---|---|
-| Face cropping | **+5,14 poin** |
-| Koreksi label dari nama berkas | +1,89 poin |
-| Deduplikasi | mencegah **+4,67 poin** akurasi semu |
-
-Angka dedupe perlu penjelasan khusus, dan ini salah satu bagian terkuat
-laporanmu:
-
-> Deduplikasi tidak menaikkan akurasi — justru menurunkannya. Tanpa
-> deduplikasi, gambar yang nyaris identik tersebar di himpunan latih dan uji
-> sekaligus, sehingga akurasi yang dilaporkan rata-rata 4,67 poin lebih
-> tinggi daripada kemampuan model yang sebenarnya. Penurunan angka setelah
-> deduplikasi adalah koreksi, bukan kemunduran.
-
-### 4.4 Perbandingan Baseline
-
-| Metode | Akurasi |
-|---|---|
-| Tebak acak proporsional | 25,2% |
-| Tebak kelas mayoritas | 27,7% |
-| CNN dilatih dari nol | 24–44% (tidak stabil) |
-| Regresi logistik atas embedding beku | 60,4% |
-| **MobileNetV2 fine-tuned** | **61,1%** |
-
-Dua catatan yang harus ikut ditulis:
-
-**CNN dari nol tidak stabil.** Dari lima fold, satu mencapai 43,67% dan
-empat lainnya kolaps ke sekitar 25% (setara tebakan). Pada ~900 gambar,
-pelatihan dari nol sangat bergantung inisialisasi. Bandingkan transfer
-learning dengan fold terbaiknya (~44%), sehingga kontribusi transfer
-learning realistis sekitar **+17 poin** — bukan +35 seperti jika
-dibandingkan dengan rata-rata yang didominasi kegagalan.
-
-**Regresi logistik hampir menyamai fine-tuning.** Selisihnya kecil, yang
-menunjukkan sebagian besar kemampuan berasal dari fitur pra-latih ImageNet,
-bukan dari fine-tuning. Uji McNemar berpasangan tetap menunjukkan
-fine-tuning unggul secara signifikan (p = 0,046).
-
-### 4.5 Kualitas Anotasi Dataset
-
-Tiga bukti independen:
-
-1. **59 berkas salah folder** — nama berkas menyebut kelas berbeda dari
-   folder tempatnya berada (contoh: `image square 158.jpg` di folder
-   `rectangular`)
-2. **Blok berurutan** — berkas `ovale` bernomor 500–549: 24 dari 35
-   diprediksi `rectangular` dengan keyakinan tinggi, menandakan satu batch
-   pengumpulan salah tempat
-3. **57 gambar salah dengan keyakinan >90%** — daftar lengkap di
-   `artifacts/suspected_mislabels.csv`
-
-**Uji pembersihan label (v10).** Confident learning diterapkan hanya pada
-porsi latih di dalam tiap fold; test fold tetap memakai label asli.
-
-| Lengan | Akurasi |
-|---|---|
-| Tanpa pembersihan | 62,51% |
-| Dengan pembersihan | 62,16% |
-
-Uji McNemar: 76 prediksi berubah menjadi salah, 72 menjadi benar,
-**p = 0,805**. Pembersihan label tidak memberi efek yang dapat dibedakan
-dari kebetulan.
-
-Kesimpulan yang jujur: sebagian besar kesalahan model bukan berasal dari
-label keliru, melainkan dari ambiguitas visual antar-kelas yang memang
-nyata. Top-2 accuracy 82,88% mendukung ini — jawaban benar hampir selalu
-ada di dua tebakan teratas, pola khas kelas yang saling tumpang tindih.
-
-### 4.6 Analisis Kesalahan
-
-Confusion matrix menunjukkan `square` berperan sebagai kelas penampung:
-
-| Pasangan | Frekuensi |
-|---|---|
-| ovale → square | 85 |
-| round → square | 81 |
-| ovale → rectangular | 57 |
-| round → ovale | 42 |
-
-Kalimat yang akurat untuk laporan:
-
-> Kelas `square` memiliki recall tertinggi (75,5%) namun precision terendah
-> (51,2%). Model cenderung memilih `square` saat ragu, sehingga banyak
-> gambar berlabel `ovale` dan `round` terklasifikasi ke sana. Sebaliknya
-> `round` memiliki precision 82,2% dengan recall hanya 50,3% — model jarang
-> menebak `round`, tetapi ketika menebaknya biasanya benar.
-
-⚠️ **Jangan kutip** kalimat yang tercetak di sel 9 notebook 14
-("square/rectangular dan round/ovale memang mirip secara visual"). Kalimat
-itu tertinggal dari eksperimen lebih awal dan **tidak cocok** dengan
-confusion matrix run final.
-
-### 4.7 Implementasi Aplikasi
-
-- Antarmuka web (Streamlit): kamera, unggah, batch, panduan
-- Aplikasi kamera realtime dengan fitur tangkapan layar
-- Rekomendasi gaya rambut per kelas dari dua panduan barbering
-- Desain antarmuka menyesuaikan performa model: dua tebakan selalu
-  ditampilkan, indikator warna tingkat keyakinan, dan peringatan ketika
-  wajah gagal terdeteksi
+Dataset awal memiliki struktur folder `training_set` dan `testing_set`. Namun, pada evaluasi final seluruh data digabungkan terlebih dahulu, dilakukan deduplikasi secara global, kemudian dibagi ulang menggunakan **Stratified 5-Fold Cross Validation**.
 
 ---
 
-## Bab 5 — Kesimpulan dan Saran
+## Data Preprocessing
 
-**Kesimpulan**
-1. MobileNetV2 fine-tuned mencapai 61,11% ± 1,29 (top-2 82,88%) pada empat
-   kelas bentuk wajah, jauh di atas tebak mayoritas 27,7%
-2. Face cropping adalah langkah pra-pemrosesan paling berpengaruh (+5,14)
-3. Deduplikasi wajib dilakukan; tanpanya akurasi terlaporkan 4,67 poin
-   lebih tinggi secara semu
-4. Pembersihan label tidak meningkatkan akurasi (p = 0,805); keterbatasan
-   utama adalah ambiguitas antar-kelas, bukan kesalahan anotasi
+Sebelum digunakan untuk pelatihan model, gambar melalui beberapa tahapan preprocessing.
 
-**Saran**
-1. Ukur tingkat kesepakatan antar-anotator manusia sebagai batas atas
-   realistis — tanpa angka ini, 61% sulit dinilai bagus atau buruk
-2. Face landmark (MediaPipe FaceMesh) untuk penyelarasan dan ekstraksi
-   rasio geometris eksplisit (lebar rahang ÷ tinggi wajah, dsb.)
-3. Dataset lebih besar dengan protokol anotasi yang terdokumentasi
+### 1. Perbaikan Format Gambar
 
----
+Sebagian file memiliki ekstensi `.jpg`, tetapi sebenarnya disimpan menggunakan format WEBP.
 
-## Lampiran
+File tersebut dikonversi agar dapat dibaca secara konsisten oleh pipeline pelatihan.
 
-| Lampiran | Isi |
-|---|---|
-| A | Kode notebook 14 (pelatihan) dan 15 (inferensi) |
-| B | `suspected_mislabels.csv` — daftar kandidat label keliru |
-| C | Riwayat eksperimen v1–v13 dan temuan tiap tahap |
-| D | Kode aplikasi (`app.py`, `live_camera.py`, `faceshape.py`) |
+### 2. Koreksi Label Berdasarkan Nama File
 
----
+Ditemukan **59 gambar** yang berada pada folder kelas yang tidak sesuai dengan informasi kelas pada nama filenya.
 
-## Pemetaan notebook → bagian laporan
+Contoh:
 
-| Notebook | Dipakai di | Temuan |
-|---|---|---|
-| 1–3 | 4.1 | Protokol A; penemuan 59 label salah |
-| 4 | 4.2 | Uji pergeseran domain — hipotesis ditolak |
-| 5–8 | 3.3 | Pengembangan protokol 5-fold OOF |
-| 9–10 | 4.5 | Confident learning — hasil nol (p = 0,805) |
-| 11 | 4.3 | Studi ablasi |
-| 12 | 4.4 | Baseline + uji kepala vs fine-tune |
-| 14 | 4.1, 4.6 | Hasil akhir |
-| 15 + aplikasi | 4.7 | Implementasi |
+```text
+image square 158.jpg
+```
 
----
+ditemukan berada di folder:
 
-## Catatan integritas data
+```text
+rectangular
+```
 
-**Eksperimen v11 dan v12 memakai test fold sebagai validation set.** Akibatnya
-nilai absolutnya lebih tinggi 2–4 poin dari yang seharusnya. Yang tetap sah
-dari kedua eksperimen itu adalah **perbandingan relatifnya**, karena semua
-kombinasi yang dibandingkan mendapat keuntungan yang sama persis:
+Label gambar tersebut kemudian diperbaiki sebelum proses pelatihan.
 
-- v11: selisih antar-kombinasi ablasi → **sah**
-- v12: kepala vs fine-tuning, McNemar p = 0,046 → **sah**
-- Nilai absolut v11 dan v12 → **jangan dilaporkan sebagai hasil akhir**
+### 3. Face Cropping
 
-Hanya notebook 14 yang memakai protokol tanpa kebocoran, dan hanya angkanya
-(61,11%) yang boleh disajikan sebagai hasil.
+Deteksi wajah dilakukan menggunakan **Haar Cascade**.
 
-Sebutkan hal ini di bab metodologi atau catatan kaki. Menuliskan keterbatasan
-metode sendiri jauh lebih baik daripada ditemukan penguji.
+Setelah wajah ditemukan, area wajah dipotong dengan tambahan margin sebesar **35%** agar bagian kepala dan kontur wajah tetap tersedia untuk model.
+
+Eksperimen ablasi menunjukkan bahwa face cropping merupakan preprocessing dengan kontribusi terbesar terhadap performa model.
+
+**Peningkatan akurasi: +5,14 poin.**
+
+### 4. Deduplikasi
+
+Deteksi gambar duplikat atau hampir identik dilakukan menggunakan **perceptual hashing (dHash)** dengan ambang batas **Hamming Distance ≤ 5**.
+
+Sebanyak **173 gambar** dihapus dari dataset.
+
+Deduplikasi dilakukan sebelum pembagian fold untuk mencegah gambar yang hampir identik muncul pada data training dan testing secara bersamaan.
+
+Tanpa deduplikasi, akurasi model terlihat sekitar **4,67 poin lebih tinggi secara semu**.
 
 ---
 
-## Pertanyaan penguji yang mungkin muncul
+## Metode Evaluasi
 
-**"Kenapa akurasinya hanya 61%?"**
-Bentuk wajah adalah kategori dengan batas kabur; top-2 mencapai 82,88%,
-menunjukkan jawaban benar hampir selalu ada di dua tebakan teratas. Dataset
-juga kecil (1139) dengan kualitas anotasi yang terbukti bermasalah — 59
-berkas salah folder ditemukan secara terdokumentasi.
+Dalam pengembangan proyek ini digunakan dua protokol evaluasi.
 
-**"Kenapa hasilnya beda-beda antar-versi?"**
-Karena protokol evaluasinya berbeda, dan pergantian protokol itu sendiri
-merupakan temuan (Bab 4.1–4.2). Perbandingan yang sah hanya dalam protokol
-yang sama.
+### Protokol A — Original Dataset Split
 
-**"Kenapa tidak memakai model yang lebih besar?"**
-Regresi logistik di atas fitur beku sudah mencapai 60,4%, sangat dekat
-dengan fine-tuning penuh. Ini menandakan hambatannya ada pada data, bukan
-kapasitas model. Memperbesar arsitektur kecil kemungkinan membantu.
+Model dilatih menggunakan pembagian `training_set` dan `testing_set` bawaan dataset.
 
-**"Bagaimana memastikan tidak ada kebocoran data?"**
-Deduplikasi perceptual dilakukan secara global sebelum pembagian fold, dan
-validation set diambil dari porsi latih, bukan dari test fold.
+Hasil yang diperoleh selama eksperimen:
+
+| Eksperimen            | Akurasi |
+| --------------------- | ------: |
+| Eksperimen awal       |   39,2% |
+| Eksperimen berikutnya |   44,4% |
+| Eksperimen berikutnya |   43,5% |
+
+Analisis lebih lanjut menunjukkan bahwa gambar yang berasal dari `testing_set` secara konsisten sekitar **11 poin lebih sulit** dibanding gambar yang berasal dari `training_set`.
+
+---
+
+### Protokol B — Stratified 5-Fold Cross Validation
+
+Pada protokol final:
+
+1. Seluruh gambar digabungkan.
+2. Deduplikasi dilakukan secara global.
+3. Dataset dibagi menggunakan **Stratified 5-Fold Cross Validation**.
+4. Setiap gambar menjadi data testing tepat satu kali.
+5. Prediksi seluruh test fold digabungkan menjadi **Out-of-Fold Prediction (OOF)**.
+
+Protokol ini digunakan sebagai hasil utama karena memberikan estimasi performa yang lebih representatif untuk dataset yang relatif kecil.
+
+---
+
+## Model
+
+Model utama yang digunakan adalah **MobileNetV2** yang telah dilatih sebelumnya menggunakan dataset **ImageNet**.
+
+Arsitektur akhir:
+
+```text
+Input Image
+    ↓
+MobileNetV2 (ImageNet)
+    ↓
+Global Average Pooling
+    ↓
+Dropout (0.25)
+    ↓
+Dense (128)
+    ↓
+Dropout (0.15)
+    ↓
+Dense (4, Softmax)
+```
+
+---
+
+## Training Strategy
+
+Pelatihan dilakukan dalam dua tahap.
+
+### Tahap 1 — Training Classification Head
+
+Backbone MobileNetV2 dibekukan.
+
+```text
+Learning Rate = 1e-3
+```
+
+Pada tahap ini hanya classification head yang dilatih.
+
+### Tahap 2 — Fine-Tuning
+
+Sebanyak **60 layer teratas MobileNetV2** dibuka untuk fine-tuning.
+
+```text
+Learning Rate = 1e-5
+```
+
+Layer **Batch Normalization tetap dibekukan** untuk menjaga kestabilan proses fine-tuning.
+
+---
+
+## Data Augmentation
+
+Augmentasi yang digunakan:
+
+```text
+Horizontal Flip
+Rotation = 0.06
+Zoom = 0.06
+Label Smoothing = 0.05
+```
+
+Augmentasi digunakan untuk meningkatkan variasi data tanpa mengubah karakteristik utama bentuk wajah.
+
+---
+
+## Pencegahan Data Leakage
+
+Dalam protokol final, validation set hanya diambil dari bagian training pada masing-masing fold.
+
+Skema pembagian:
+
+```text
+Dataset
+   ↓
+5-Fold Cross Validation
+   ↓
+Training Fold ─────── Test Fold
+   ↓
+85% Training
+15% Validation
+```
+
+Test fold **tidak digunakan sebagai validation set**.
+
+Langkah ini penting karena eksperimen sebelumnya menunjukkan bahwa penggunaan test fold sebagai validation dapat meningkatkan hasil sekitar **2–4 poin secara semu**.
+
+---
+
+## Hasil Model
+
+Hasil final menggunakan **5-Fold Out-of-Fold Prediction** pada seluruh **1.139 gambar**:
+
+| Metrik               |             Nilai |
+| -------------------- | ----------------: |
+| OOF Accuracy         | **61,11% ± 1,29** |
+| Top-2 Accuracy       |        **82,88%** |
+| Random Guess         |            25,00% |
+| Majority Class Guess |            27,66% |
+
+Akurasi **61,11%** merupakan angka utama yang digunakan sebagai performa final model.
+
+---
+
+## Performa Per Kelas
+
+| Kelas       | Precision |    Recall | F1-Score |
+| ----------- | --------: | --------: | -------: |
+| ovale       |     0,629 |     0,511 |    0,564 |
+| rectangular |     0,600 |     0,710 |    0,651 |
+| round       | **0,822** |     0,503 |    0,624 |
+| square      |     0,512 | **0,755** |    0,610 |
+
+Kelas `square` memiliki recall tertinggi sebesar **75,5%**, namun precision terendah sebesar **51,2%**.
+
+Hal ini menunjukkan bahwa model cenderung memilih kelas `square` ketika tidak yakin dengan prediksinya.
+
+Sebaliknya, kelas `round` memiliki precision tertinggi sebesar **82,2%**, tetapi recall hanya **50,3%**. Artinya model relatif jarang memilih kelas `round`, tetapi ketika kelas tersebut dipilih, prediksinya lebih sering benar.
+
+---
+
+## Confusion Matrix Analysis
+
+Kesalahan klasifikasi paling sering terjadi pada pasangan berikut:
+
+| Prediksi Salah      | Jumlah |
+| ------------------- | -----: |
+| ovale → square      |     85 |
+| round → square      |     81 |
+| ovale → rectangular |     57 |
+| round → ovale       |     42 |
+
+Model memiliki kecenderungan menjadikan `square` sebagai kelas penampung ketika karakteristik gambar tidak dapat dibedakan dengan cukup jelas.
+
+---
+
+## Studi Ablasi
+
+Eksperimen dilakukan untuk mengetahui kontribusi masing-masing tahapan preprocessing.
+
+| Tahapan       |               Efek terhadap evaluasi |
+| ------------- | -----------------------------------: |
+| Face Cropping |                       **+5,14 poin** |
+| Koreksi Label |                           +1,89 poin |
+| Deduplikasi   | Mencegah **+4,67 poin akurasi semu** |
+
+Face cropping menjadi tahapan preprocessing yang memberikan peningkatan performa paling besar.
+
+Sementara itu, deduplikasi tidak meningkatkan angka akurasi. Sebaliknya, akurasi menjadi lebih rendah setelah deduplikasi dilakukan.
+
+Hal tersebut merupakan hasil yang diharapkan karena tanpa deduplikasi terdapat gambar yang hampir identik pada training dan testing sehingga performa model terlihat lebih tinggi daripada kemampuan sebenarnya.
+
+---
+
+## Baseline Model
+
+Beberapa metode dibandingkan untuk mengetahui kontribusi transfer learning dan fine-tuning.
+
+| Metode                                 |   Akurasi |
+| -------------------------------------- | --------: |
+| Random Guess                           |     25,2% |
+| Majority Class                         |     27,7% |
+| CNN From Scratch                       |    24–44% |
+| Logistic Regression + Frozen Embedding |     60,4% |
+| **MobileNetV2 Fine-Tuned**             | **61,1%** |
+
+### CNN From Scratch
+
+CNN yang dilatih dari awal menunjukkan performa yang tidak stabil.
+
+Dari lima fold:
+
+* satu fold mencapai **43,67%**
+* empat fold lainnya berada di sekitar **25%**
+
+Hal tersebut menunjukkan bahwa dataset sekitar 900 gambar training per fold belum cukup stabil untuk melatih CNN sepenuhnya dari awal.
+
+Jika dibandingkan dengan fold terbaik CNN from scratch sekitar **44%**, transfer learning memberikan peningkatan realistis sekitar **17 poin**.
+
+### Logistic Regression
+
+Regresi logistik menggunakan embedding MobileNetV2 yang dibekukan sudah mencapai akurasi sekitar **60,4%**.
+
+Hasil tersebut sangat dekat dengan MobileNetV2 yang di-fine-tune sebesar **61,1%**.
+
+Hal ini menunjukkan bahwa sebagian besar kemampuan klasifikasi berasal dari representasi fitur hasil pretraining ImageNet.
+
+Walaupun selisihnya kecil, uji **McNemar** menunjukkan bahwa fine-tuning memberikan peningkatan yang signifikan secara statistik:
+
+```text
+p-value = 0.046
+```
+
+---
+
+## Analisis Kualitas Dataset
+
+Selama eksperimen ditemukan beberapa indikasi masalah kualitas anotasi.
+
+### 1. Salah Folder
+
+Ditemukan **59 gambar** yang kelas pada nama filenya berbeda dengan folder tempat gambar tersebut berada.
+
+### 2. Blok Gambar Mencurigakan
+
+Pada kelas `ovale`, gambar dengan nomor sekitar **500–549** menunjukkan pola yang tidak biasa.
+
+Sebanyak **24 dari 35 gambar** pada bagian tersebut diprediksi sebagai `rectangular` dengan confidence tinggi.
+
+Hal tersebut menunjukkan kemungkinan adanya satu batch data yang ditempatkan pada kelas yang kurang tepat.
+
+### 3. High-Confidence Misclassification
+
+Ditemukan **57 gambar** yang salah diklasifikasikan dengan confidence lebih dari **90%**.
+
+Gambar-gambar tersebut dicatat sebagai kandidat mislabel pada:
+
+```text
+artifacts/suspected_mislabels.csv
+```
+
+---
+
+## Confident Learning
+
+Untuk menguji apakah label yang salah menjadi penyebab utama rendahnya akurasi, digunakan pendekatan **Confident Learning**.
+
+Pembersihan label hanya dilakukan pada data training di setiap fold. Test fold tetap menggunakan label asli.
+
+| Eksperimen            | Akurasi |
+| --------------------- | ------: |
+| Tanpa Label Cleaning  |  62,51% |
+| Dengan Label Cleaning |  62,16% |
+
+Hasil uji McNemar:
+
+```text
+76 prediksi berubah menjadi salah
+72 prediksi berubah menjadi benar
+
+p-value = 0.805
+```
+
+Tidak ditemukan peningkatan performa yang signifikan dari pembersihan label.
+
+Hal tersebut menunjukkan bahwa sebagian besar kesalahan klasifikasi kemungkinan berasal dari **ambiguitas visual antar-kelas**, bukan hanya akibat kesalahan anotasi.
+
+Temuan tersebut juga didukung oleh **Top-2 Accuracy sebesar 82,88%**, yang menunjukkan bahwa pada sebagian besar kasus kelas yang benar masih berada dalam dua prediksi teratas model.
+
+---
+
+## Analisis Asal Gambar
+
+Salah satu temuan penting selama eksperimen adalah adanya perbedaan tingkat kesulitan antara gambar yang awalnya berasal dari `training_set` dan `testing_set`.
+
+Temuan ini berhasil direplikasi beberapa kali.
+
+| Eksperimen | Selisih Akurasi | z-score |
+| ---------- | --------------: | ------: |
+| v6         |     +10,68 poin |    3,40 |
+| v9         |     +11,75 poin |    3,73 |
+| v10        |     +11,53 poin |    3,67 |
+| v14        |     +11,59 poin |    3,62 |
+
+Gambar dari `testing_set` secara konsisten sekitar **11 poin lebih sulit**.
+
+Hipotesis awal adalah adanya **domain shift** antara kedua subset.
+
+Untuk mengujinya, dibuat binary classifier untuk memprediksi apakah sebuah gambar berasal dari `training_set` atau `testing_set`.
+
+Hasil:
+
+```text
+Binary Classifier Accuracy : 70.18%
+Majority Baseline          : 69.10%
+```
+
+Karena hasil classifier hanya sedikit lebih baik dibanding majority baseline, tidak ditemukan bukti kuat bahwa kedua subset memiliki perbedaan visual yang jelas.
+
+Dengan demikian, hipotesis bahwa perbedaan performa disebabkan oleh **domain shift dari proses pengumpulan data** tidak didukung oleh eksperimen.
+
+---
+
+## Cara Kerja Aplikasi
+
+Alur utama aplikasi:
+
+```text
+Input Gambar / Kamera
+        ↓
+Deteksi Wajah
+        ↓
+Face Cropping
+        ↓
+Resize & Preprocessing
+        ↓
+MobileNetV2
+        ↓
+Probabilitas 4 Bentuk Wajah
+        ↓
+Top-1 & Top-2 Prediction
+        ↓
+Rekomendasi Gaya Rambut
+```
+
+Pengguna dapat memberikan input melalui:
+
+* upload gambar;
+* kamera;
+* batch image processing;
+* aplikasi kamera realtime.
+
+Setelah wajah terdeteksi, gambar diproses oleh model untuk menghasilkan probabilitas dari empat kelas bentuk wajah.
+
+Karena Top-2 Accuracy model jauh lebih tinggi dibanding Top-1 Accuracy, aplikasi menampilkan **dua prediksi tertinggi** kepada pengguna.
+
+---
+
+## Fitur Aplikasi
+
+Aplikasi menyediakan beberapa fitur utama:
+
+### Image Upload
+
+Pengguna dapat mengunggah gambar wajah untuk dianalisis.
+
+### Camera Input
+
+Pengguna dapat mengambil foto langsung menggunakan kamera.
+
+### Batch Processing
+
+Beberapa gambar dapat dianalisis sekaligus.
+
+### Real-Time Camera
+
+Tersedia aplikasi kamera realtime yang dapat melakukan klasifikasi bentuk wajah dan menyimpan screenshot.
+
+### Top-2 Prediction
+
+Aplikasi menampilkan dua bentuk wajah dengan probabilitas tertinggi.
+
+### Confidence Indicator
+
+Tingkat confidence model ditampilkan menggunakan indikator visual.
+
+### Face Detection Warning
+
+Jika wajah tidak berhasil dideteksi, aplikasi memberikan peringatan kepada pengguna.
+
+### Hairstyle Recommendation
+
+Berdasarkan hasil klasifikasi, aplikasi memberikan rekomendasi gaya rambut yang sesuai dengan kelas bentuk wajah pengguna.
+
+---
+
+## Project Output
+
+Aplikasi dikembangkan menggunakan **Streamlit** sebagai antarmuka utama berbasis web.
+
+Output proyek meliputi:
+
+```text
+Model Klasifikasi Bentuk Wajah
+        +
+Streamlit Web Application
+        +
+Real-Time Camera Application
+        +
+Hairstyle Recommendation System
+```
+
+File utama aplikasi meliputi:
+
+```text
+app.py
+live_camera.py
+faceshape.py
+```
+
+---
+
+## Kesimpulan
+
+Berdasarkan hasil eksperimen, diperoleh beberapa kesimpulan utama:
+
+1. **MobileNetV2 dengan transfer learning dan fine-tuning mencapai akurasi OOF sebesar 61,11% ± 1,29** pada klasifikasi empat bentuk wajah pria.
+
+2. Model mencapai **Top-2 Accuracy sebesar 82,88%**, menunjukkan bahwa kelas yang benar sering kali masih berada di antara dua prediksi dengan probabilitas tertinggi.
+
+3. **Face cropping** merupakan preprocessing yang memberikan kontribusi paling besar terhadap performa dengan peningkatan sekitar **5,14 poin**.
+
+4. **Deduplikasi merupakan tahap penting dalam evaluasi model.** Tanpa deduplikasi, akurasi terlihat sekitar **4,67 poin lebih tinggi secara semu** akibat kemungkinan gambar yang hampir identik berada pada data training dan testing.
+
+5. **Pembersihan label menggunakan Confident Learning tidak meningkatkan performa secara signifikan** dengan hasil McNemar `p = 0.805`.
+
+6. Logistic Regression menggunakan fitur MobileNetV2 yang dibekukan sudah mencapai **60,4%**, sangat dekat dengan model fine-tuned sebesar **61,1%**. Hal tersebut menunjukkan bahwa fitur hasil pretraining ImageNet memberikan kontribusi besar terhadap kemampuan klasifikasi.
+
+7. Keterbatasan utama sistem kemungkinan tidak hanya berasal dari kapasitas model, tetapi juga dari **ukuran dataset, kualitas anotasi, dan ambiguitas visual antar-kelas bentuk wajah**.
+
+---
+
+## Pengembangan Selanjutnya
+
+Beberapa pengembangan yang dapat dilakukan pada penelitian selanjutnya:
+
+1. Menggunakan dataset yang lebih besar dengan prosedur anotasi yang lebih terdokumentasi.
+2. Melakukan anotasi menggunakan beberapa manusia untuk menghitung **inter-annotator agreement**.
+3. Menggunakan **MediaPipe FaceMesh** untuk melakukan face alignment.
+4. Mengekstraksi fitur geometris wajah secara eksplisit, seperti:
+
+   * rasio lebar rahang terhadap tinggi wajah;
+   * rasio lebar dahi;
+   * panjang wajah;
+   * lebar cheekbone;
+   * sudut rahang.
+5. Menggabungkan fitur geometris dengan deep learning.
+6. Mengembangkan sistem rekomendasi hairstyle yang lebih personal dengan mempertimbangkan karakteristik tambahan selain bentuk wajah.
+
+---
+
+## Catatan Integritas Eksperimen
+
+Eksperimen v11 dan v12 menggunakan test fold sebagai validation set sehingga nilai absolut dari eksperimen tersebut dapat mengalami peningkatan sekitar **2–4 poin** akibat data leakage.
+
+Oleh karena itu:
+
+```text
+v11 → hanya perbandingan relatif studi ablasi yang digunakan
+v12 → hanya perbandingan relatif head vs fine-tuning dan McNemar yang digunakan
+v14 → digunakan sebagai hasil final
+```
+
+Akurasi final yang dilaporkan adalah:
+
+```text
+61.11% ± 1.29
+```
+
+yang berasal dari protokol tanpa penggunaan test fold sebagai validation set.
+
+---
+
+## Struktur File
+
+```text
+project/
+│
+├── notebooks/
+│   ├── 14_train_final.ipynb
+│   └── 15_inference_final.ipynb
+│
+├── artifacts/
+│   └── suspected_mislabels.csv
+│
+├── app.py
+├── live_camera.py
+├── faceshape.py
+│
+└── README.md
+```
+
+---
+
+## Notebook
+
+| Notebook | Penggunaan                                  |
+| -------- | ------------------------------------------- |
+| 1–3      | Eksperimen original split dan koreksi label |
+| 4        | Pengujian hipotesis domain shift            |
+| 5–8      | Pengembangan 5-Fold OOF                     |
+| 9–10     | Confident Learning                          |
+| 11       | Ablation Study                              |
+| 12       | Baseline dan Fine-Tuning Comparison         |
+| 14       | **Final Training & Evaluation**             |
+| 15       | **Inference & Application**                 |
+
+---
+
+## Final Performance
+
+```text
+Dataset Final       : 1,139 images
+Number of Classes   : 4
+Model               : MobileNetV2
+Evaluation          : Stratified 5-Fold OOF
+
+Accuracy            : 61.11% ± 1.29
+Top-2 Accuracy      : 82.88%
+
+Random Baseline     : 25.00%
+Majority Baseline   : 27.66%
+```
+
+### **Trimatch: Your Style, Your Cut**
+
+*Matching your face shape with a hairstyle that fits you.*
