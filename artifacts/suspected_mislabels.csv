@@ -1,0 +1,169 @@
+file,label,prediksi,keyakinan,asal
+TR__ovale__532.jpg,ovale,rectangular,0.9988,TR
+TR__rectangular__image square 158.jpg,square,rectangular,0.9967,TR
+TR__round__round 636.jpg,round,ovale,0.9928,TR
+TR__ovale__528.jpg,ovale,rectangular,0.9892,TR
+TE__square__square t66.jpg,square,rectangular,0.9891,TE
+TE__round__round t23.jpg,round,ovale,0.9883,TE
+TE__round__round t16.jpg,round,square,0.9860,TE
+TE__square__square t34.jpg,square,ovale,0.9838,TE
+TR__square__CAR1.jpg,square,rectangular,0.9828,TR
+TR__rectangular__image ovale 239.jpg,ovale,square,0.9794,TR
+TE__ovale__ovale t124.jpg,ovale,rectangular,0.9748,TE
+TR__ovale__ovale 358.jpg,ovale,square,0.9743,TR
+TR__square__square 145.jpg,square,rectangular,0.9703,TR
+TE__ovale__ovale t57.jpg,ovale,square,0.9698,TE
+TR__ovale__508.jpg,ovale,rectangular,0.9670,TR
+TE__ovale__ovale t88.jpg,ovale,round,0.9662,TE
+TR__ovale__ovale 333.jpg,ovale,square,0.9650,TR
+TE__rectangular__39.jpg,rectangular,square,0.9647,TE
+TR__round__round 680.jpg,round,rectangular,0.9640,TR
+TR__ovale__image ovale 226.jpg,ovale,square,0.9622,TR
+TR__square__images round 41.jpg,round,square,0.9615,TR
+TR__ovale__500.jpg,ovale,rectangular,0.9526,TR
+TE__rectangular__66.jpg,rectangular,square,0.9495,TE
+TE__round__round t20.jpg,round,square,0.9489,TE
+TR__ovale__ovale 3.jpg,ovale,square,0.9453,TR
+TR__round__images round 57.jpg,round,square,0.9440,TR
+TR__square__square 249.jpg,square,rectangular,0.9424,TR
+TE__square__round t46.jpg,round,square,0.9419,TE
+TR__ovale__524.jpg,ovale,rectangular,0.9416,TR
+TE__round__round t63.jpg,round,ovale,0.9393,TE
+TR__rectangular__image sqaure 177.jpg,rectangular,square,0.9376,TR
+TR__round__round 425.jpg,round,ovale,0.9369,TR
+TE__rectangular__69.jpg,rectangular,square,0.9360,TE
+TR__rectangular__image ovale 241.jpg,ovale,square,0.9342,TR
+TR__round__round 527.jpg,round,square,0.9316,TR
+TR__square__images round 50.jpg,round,square,0.9275,TR
+TR__square__RO7.jpg,square,rectangular,0.9264,TR
+TE__round__round t26.jpg,round,rectangular,0.9246,TE
+TE__round__round t22.jpg,round,square,0.9243,TE
+TR__ovale__image ovale 220.jpg,ovale,square,0.9233,TR
+TR__round__round 662.jpg,round,rectangular,0.9233,TR
+TE__rectangular__53.jpg,rectangular,ovale,0.9227,TE
+TR__ovale__image ovale 219.jpg,ovale,rectangular,0.9171,TR
+TR__round__images round 18.jpg,round,ovale,0.9165,TR
+TR__square__RO5.jpg,square,ovale,0.9163,TR
+TE__ovale__ovale t113.jpg,ovale,square,0.9158,TE
+TE__rectangular__35.jpg,rectangular,square,0.9156,TE
+TE__rectangular__17.jpg,rectangular,square,0.9155,TE
+TE__rectangular__36.jpg,rectangular,square,0.9133,TE
+TR__round__round 612.jpg,round,rectangular,0.9113,TR
+TR__ovale__18.jpg,ovale,rectangular,0.9089,TR
+TE__round__round t6.jpg,round,square,0.9079,TE
+TR__ovale__ovale 440.jpg,ovale,rectangular,0.9025,TR
+TE__ovale__ovale t32.jpg,ovale,square,0.9019,TE
+TR__rectangular__image ovale 234.jpg,ovale,square,0.9018,TR
+TE__rectangular__square t91.jpg,square,rectangular,0.9017,TE
+TR__ovale__17.jpg,ovale,rectangular,0.9015,TR
+TE__ovale__ovale t130.jpg,ovale,rectangular,0.8988,TE
+TE__square__round t45.jpg,round,rectangular,0.8985,TE
+TR__ovale__544.jpg,ovale,square,0.8965,TR
+TR__round__image round 54.jpg,round,square,0.8919,TR
+TE__rectangular__40.jpg,rectangular,square,0.8888,TE
+TE__ovale__ovale t2.jpg,ovale,rectangular,0.8886,TE
+TR__ovale__520.jpg,ovale,rectangular,0.8882,TR
+TE__round__round t11.jpg,round,square,0.8860,TE
+TR__ovale__521.jpg,ovale,rectangular,0.8858,TR
+TE__ovale__ovale t59.jpg,ovale,square,0.8857,TE
+TR__square__RO4.jpg,square,rectangular,0.8848,TR
+TR__round__image round 1.jpg,round,square,0.8831,TR
+TE__rectangular__71.jpg,rectangular,ovale,0.8751,TE
+TR__ovale__513.jpg,ovale,rectangular,0.8738,TR
+TE__ovale__ovale t76.jpg,ovale,rectangular,0.8731,TE
+TR__rectangular__155.jpg,rectangular,square,0.8728,TR
+TE__ovale__ovale t1.jpg,ovale,rectangular,0.8714,TE
+TR__ovale__512.jpg,ovale,rectangular,0.8710,TR
+TR__ovale__533.jpg,ovale,rectangular,0.8709,TR
+TE__round__round t10.jpg,round,square,0.8688,TE
+TE__ovale__ovale t61.jpg,ovale,square,0.8673,TE
+TR__round__round 519.jpg,round,square,0.8576,TR
+TR__round__round 616.jpg,round,square,0.8572,TR
+TR__round__round 633.jpg,round,rectangular,0.8532,TR
+TR__rectangular__image ovale 237.jpg,ovale,square,0.8526,TR
+TR__round__image round 83.jpg,round,square,0.8520,TR
+TR__ovale__514.jpg,ovale,rectangular,0.8511,TR
+TR__round__round 632.jpg,round,square,0.8479,TR
+TE__rectangular__81.jpg,rectangular,ovale,0.8478,TE
+TR__rectangular__202.jpg,rectangular,ovale,0.8455,TR
+TE__ovale__ovale t53.jpg,ovale,rectangular,0.8451,TE
+TR__ovale__ovale 317.jpg,ovale,square,0.8398,TR
+TR__ovale__image ovale 227.jpg,ovale,square,0.8378,TR
+TE__rectangular__84.jpg,rectangular,square,0.8372,TE
+TE__round__round t65.jpg,round,ovale,0.8294,TE
+TR__round__round 493.jpg,round,ovale,0.8292,TR
+TR__ovale__ovale 307.jpg,ovale,square,0.8253,TR
+TR__rectangular__32.jpg,rectangular,square,0.8226,TR
+TR__ovale__519.jpg,ovale,rectangular,0.8132,TR
+TE__ovale__ovale t127.jpg,ovale,rectangular,0.8125,TE
+TE__square__round t33.jpg,round,square,0.8119,TE
+TE__round__round t2.jpg,round,ovale,0.8117,TE
+TE__ovale__ovale t11.jpg,ovale,square,0.8070,TE
+TR__ovale__506.jpg,ovale,square,0.8011,TR
+TE__round__round 77.jpg,round,ovale,0.8007,TE
+TR__round__image round 8.jpg,round,square,0.7987,TR
+TE__round__round t18.jpg,round,square,0.7978,TE
+TR__round__image round 86.jpg,round,square,0.7977,TR
+TR__round__image round 72.jpg,round,square,0.7966,TR
+TR__ovale__ovale 360.jpg,ovale,square,0.7936,TR
+TE__ovale__ovale t4.jpg,ovale,square,0.7932,TE
+TE__ovale__ovale t117.jpg,ovale,rectangular,0.7932,TE
+TR__ovale__540.jpg,ovale,rectangular,0.7931,TR
+TR__square__images round 48.jpg,round,square,0.7919,TR
+TR__round__round 631.jpg,round,ovale,0.7887,TR
+TE__ovale__ovale t114.jpg,ovale,square,0.7860,TE
+TE__ovale__ovale t10.jpg,ovale,rectangular,0.7855,TE
+TE__round__round t19.jpg,round,square,0.7855,TE
+TR__round__round 556.jpg,round,ovale,0.7853,TR
+TR__ovale__image ovale 191.jpg,ovale,square,0.7849,TR
+TE__ovale__ovale t17.jpg,ovale,square,0.7845,TE
+TR__round__images round 12.jpg,round,square,0.7835,TR
+TR__rectangular__image sqaure 147.jpg,rectangular,square,0.7820,TR
+TE__rectangular__9.jpg,rectangular,square,0.7810,TE
+TR__round__images round 59.jpg,round,square,0.7772,TR
+TE__ovale__ovale t115.jpg,ovale,square,0.7760,TE
+TR__square__square 277.jpg,square,round,0.7759,TR
+TE__round__round t15.jpg,round,square,0.7758,TE
+TR__ovale__510.jpg,ovale,rectangular,0.7678,TR
+TR__square__square 124.jpg,square,round,0.7678,TR
+TR__square__LA6.jpg,square,rectangular,0.7643,TR
+TR__ovale__image ovale 196.jpg,ovale,square,0.7642,TR
+TR__square__square 155.jpg,square,round,0.7630,TR
+TR__ovale__ovale 321.jpg,ovale,rectangular,0.7583,TR
+TR__square__image square 127.jpg,square,rectangular,0.7550,TR
+TR__round__round 538.jpg,round,rectangular,0.7531,TR
+TE__round__round t64.jpg,round,rectangular,0.7530,TE
+TR__rectangular__image ovale 243.jpg,ovale,square,0.7524,TR
+TE__round__round t42.jpg,round,ovale,0.7507,TE
+TE__round__round t12.jpg,round,square,0.7488,TE
+TR__round__images round 66.jpg,round,square,0.7479,TR
+TR__round__round 518.jpg,round,rectangular,0.7472,TR
+TR__ovale__ovale 449.jpg,ovale,rectangular,0.7461,TR
+TR__ovale__526.jpg,ovale,square,0.7455,TR
+TE__round__round t74.jpg,round,square,0.7439,TE
+TR__ovale__516.jpg,ovale,rectangular,0.7439,TR
+TR__square__square 280.jpg,square,rectangular,0.7421,TR
+TE__ovale__ovale t7.jpg,ovale,rectangular,0.7419,TE
+TE__ovale__ovale t112.jpg,ovale,round,0.7409,TE
+TR__rectangular__image ovale 252.jpg,ovale,square,0.7387,TR
+TR__round__round 590.jpg,round,square,0.7385,TR
+TR__round__round 561.jpg,round,square,0.7353,TR
+TE__round__round t4.jpg,round,rectangular,0.7332,TE
+TE__rectangular__54.jpg,rectangular,ovale,0.7301,TE
+TR__square__square 141.jpg,square,ovale,0.7265,TR
+TR__ovale__ovale 433.jpg,ovale,round,0.7250,TR
+TR__ovale__502.jpg,ovale,rectangular,0.7222,TR
+TR__round__image round 55.jpg,round,square,0.7212,TR
+TE__round__round t36.jpg,round,square,0.7181,TE
+TR__rectangular__146.jpg,rectangular,ovale,0.7179,TR
+TR__rectangular__image ovale 257.jpg,ovale,rectangular,0.7168,TR
+TR__ovale__ovale 359.jpg,ovale,square,0.7164,TR
+TE__rectangular__16.jpg,rectangular,ovale,0.7156,TE
+TE__round__round t44.jpg,round,square,0.7146,TE
+TR__ovale__image ovale 223.jpg,ovale,square,0.7138,TR
+TR__rectangular__200 (2).jpg,rectangular,round,0.7136,TR
+TR__rectangular__image ovale 256.jpg,ovale,square,0.7128,TR
+TE__round__round t1.jpg,round,rectangular,0.7065,TE
+TR__ovale__image ovale 187.jpg,ovale,square,0.7054,TR
+TR__round__round 422.jpg,round,square,0.7053,TR
+TR__round__image round 61.jpg,round,square,0.7025,TR

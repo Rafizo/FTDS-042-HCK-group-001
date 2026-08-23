@@ -1,0 +1,45 @@
+{
+  "dibuat": "2026-08-23 14:36",
+  "classes": [
+    "ovale",
+    "rectangular",
+    "round",
+    "square"
+  ],
+  "img_size": [
+    224,
+    224
+  ],
+  "crop_margin": 0.35,
+  "cascade": "haarcascade_frontalface_default.xml",
+  "input_dtype": "uint8",
+  "catatan_input": "model menerima uint8 mentah; normalisasi ada di dalam model",
+  "arsitektur": "MobileNetV2 + GAP + Dropout + Dense128 + Dense4",
+  "fine_tune_layers": 60,
+  "label_smoothing": 0.05,
+  "n_folds": 5,
+  "seed": 42,
+  "n_gambar": 1139,
+  "oof_accuracy": 0.611062335381914,
+  "top2_accuracy": 0.8287971905179983,
+  "fold_accuracy": [
+    0.6096491228070176,
+    0.6359649122807017,
+    0.6052631578947368,
+    0.6052631578947368,
+    0.5991189427312775
+  ],
+  "akurasi_per_kelas": {
+    "ovale": 0.5111111111111111,
+    "rectangular": 0.710204081632653,
+    "round": 0.5033112582781457,
+    "square": 0.7545126353790613
+  },
+  "models": [
+    "faceshape_fold1.keras",
+    "faceshape_fold2.keras",
+    "faceshape_fold3.keras",
+    "faceshape_fold4.keras",
+    "faceshape_fold5.keras"
+  ]
+}

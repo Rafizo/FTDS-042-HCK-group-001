@@ -1,0 +1,4 @@
+ovale
+rectangular
+round
+square
