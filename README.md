@@ -1,3 +1,8 @@
+# Trimatch: Your Style, Your Cut
+## AI-Based Hairstyle Recommendation for Men Based on Face Shape
+
+![alt text](Logo_Trimatch.jpeg)
+
 # Struktur Laporan — Klasifikasi Bentuk Wajah Pria
 
 Kerangka penulisan berdasarkan seluruh eksperimen v1–v15, lengkap dengan
