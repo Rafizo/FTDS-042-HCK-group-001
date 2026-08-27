@@ -1,4 +1,0 @@
-ovale
-rectangular
-round
-square
