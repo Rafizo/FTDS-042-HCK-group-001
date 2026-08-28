@@ -70,10 +70,8 @@ Dataset awal memiliki **1.312 gambar** yang kemudian melalui beberapa tahapan pe
 | Tahap Dataset                          |    Jumlah |
 | -------------------------------------- | --------: |
 | Gambar mentah                          |     1.312 |
-| Label diperbaiki berdasarkan nama file |        59 |
-| Gambar duplikat/nyaris identik dibuang |       173 |
-| Dataset final                          | **1.139** |
-| Wajah berhasil terdeteksi              | **98,9%** |
+| Gambar duplikat/nyaris identik dibuang |       63  |
+| Dataset final                          | **1.249** |
 
 Dataset awal memiliki struktur folder `training_set` dan `testing_set`. Namun, pada evaluasi final seluruh data digabungkan terlebih dahulu, dilakukan deduplikasi secara global, kemudian dibagi ulang menggunakan **Stratified 5-Fold Cross Validation**.
 
@@ -81,14 +79,38 @@ Dataset awal memiliki struktur folder `training_set` dan `testing_set`. Namun, p
 
 ## Model
 
-Model utama yang digunakan adalah **MobileNetV2** yang telah dilatih sebelumnya menggunakan dataset **ImageNet**.
+Model utama yang digunakan adalah **CNN** yang telah dilatih menggunakan 999 gambar training dengan 80/20 validasi dan 250 gambar untuk test dataset
 
 Arsitektur akhir:
 
 ```text
 Input Image
     ↓
-MobileNetV2 (ImageNet)
+Conv2D (224, 224, 32)
+    ↓
+Batch Normalization
+    ↓
+Conv2D (224, 224, 32)
+    ↓
+Batch Normalization
+    ↓
+Conv2D (224, 224, 64)
+    ↓
+Batch Normalization
+    ↓
+Conv2D (224, 224, 64)
+    ↓
+Batch Normalization
+    ↓
+Conv2D (224, 224, 128)
+    ↓
+Batch Normalization
+    ↓
+Conv2D (224, 224, 128)
+    ↓
+Batch Normalization
+    ↓
+Max Pooling2D
     ↓
 Global Average Pooling
     ↓
@@ -106,44 +128,11 @@ Dense (4, Softmax)
 
 ## Baseline Model
 
-Beberapa metode dibandingkan untuk mengetahui kontribusi transfer learning dan fine-tuning.
-
-| Metode                                 |   Akurasi |
-| -------------------------------------- | --------: |
-| Random Guess                           |     25,2% |
-| Majority Class                         |     27,7% |
-| CNN From Scratch                       |    24–44% |
-| Logistic Regression + Frozen Embedding |     60,4% |
-| **MobileNetV2 Fine-Tuned**             | **61,1%** |
-
 ### CNN From Scratch
 
-CNN yang dilatih dari awal menunjukkan performa yang tidak stabil.
+CNN yang dilatih dari awal sesuai dengan arsitektur akhir
 
-Dari lima fold:
 
-* satu fold mencapai **43,67%**
-* empat fold lainnya berada di sekitar **25%**
-
-Hal tersebut menunjukkan bahwa dataset sekitar 900 gambar training per fold belum cukup stabil untuk melatih CNN sepenuhnya dari awal.
-
-Jika dibandingkan dengan fold terbaik CNN from scratch sekitar **44%**, transfer learning memberikan peningkatan realistis sekitar **17 poin**.
-
-### Logistic Regression
-
-Regresi logistik menggunakan embedding MobileNetV2 yang dibekukan sudah mencapai akurasi sekitar **60,4%**.
-
-Hasil tersebut sangat dekat dengan MobileNetV2 yang di-fine-tune sebesar **61,1%**.
-
-Hal ini menunjukkan bahwa sebagian besar kemampuan klasifikasi berasal dari representasi fitur hasil pretraining ImageNet.
-
-Walaupun selisihnya kecil, uji **McNemar** menunjukkan bahwa fine-tuning memberikan peningkatan yang signifikan secara statistik:
-
-```text
-p-value = 0.046
-```
-
----
 
 ## Cara Kerja Aplikasi
 
@@ -158,7 +147,7 @@ Face Cropping
         ↓
 Resize & Preprocessing
         ↓
-MobileNetV2
+CNN from scratch model
         ↓
 Probabilitas 4 Bentuk Wajah
         ↓
@@ -248,19 +237,14 @@ faceshape.py
 
 Berdasarkan hasil eksperimen, diperoleh beberapa kesimpulan utama:
 
-1. **MobileNetV2 dengan transfer learning dan fine-tuning mencapai akurasi OOF sebesar 61,11% ± 1,29** pada klasifikasi empat bentuk wajah pria.
+1. Akurasi **0,58** pada 250 gambar test, dengan baseline tebak-acak 0,25 untuk empat kelas. Model jelas mempelajari sesuatu yang nyata.
+2. Model memiliki akura
 
-2. Model mencapai **Top-2 Accuracy sebesar 82,88%**, menunjukkan bahwa kelas yang benar sering kali masih berada di antara dua prediksi dengan probabilitas tertinggi.
+3. **Deduplikasi merupakan tahap penting dalam evaluasi model.** Tanpa deduplikasi, akurasi terlihat sekitar **4,67 poin lebih tinggi secara semu** akibat kemungkinan gambar yang hampir identik berada pada data training dan testing.
 
-3. **Face cropping** merupakan preprocessing yang memberikan kontribusi paling besar terhadap performa dengan peningkatan sekitar **5,14 poin**.
+4. **Pembersihan label menggunakan Confident Learning tidak meningkatkan performa secara signifikan** dengan hasil McNemar `p = 0.805`.
 
-4. **Deduplikasi merupakan tahap penting dalam evaluasi model.** Tanpa deduplikasi, akurasi terlihat sekitar **4,67 poin lebih tinggi secara semu** akibat kemungkinan gambar yang hampir identik berada pada data training dan testing.
-
-5. **Pembersihan label menggunakan Confident Learning tidak meningkatkan performa secara signifikan** dengan hasil McNemar `p = 0.805`.
-
-6. Logistic Regression menggunakan fitur MobileNetV2 yang dibekukan sudah mencapai **60,4%**, sangat dekat dengan model fine-tuned sebesar **61,1%**. Hal tersebut menunjukkan bahwa fitur hasil pretraining ImageNet memberikan kontribusi besar terhadap kemampuan klasifikasi.
-
-7. Keterbatasan utama sistem kemungkinan tidak hanya berasal dari kapasitas model, tetapi juga dari **ukuran dataset, kualitas anotasi, dan ambiguitas visual antar-kelas bentuk wajah**.
+5. Keterbatasan utama sistem kemungkinan tidak hanya berasal dari kapasitas model, tetapi juga dari **ukuran dataset, kualitas anotasi, dan ambiguitas visual antar-kelas bentuk wajah**.
 
 ---
 
@@ -288,16 +272,17 @@ Beberapa pengembangan yang dapat dilakukan pada penelitian selanjutnya:
 ```text
 project/
 │
-├── notebooks/
-│   ├── 14_train_final.ipynb
-│   └── 15_inference_final.ipynb
+├── crop/
+├── dataset/   
+├── files/
+│   ├── model.pkl
+│   ├── TE__ovale__ovale 0002.jpg
+│   ├── Trimatch_Flowchart.png
+│   └── model.png
 │
-├── artifacts/
-│   └── suspected_mislabels.csv
-│
-├── app.py
-├── live_camera.py
-├── faceshape.py
+├── EDA_full.ipynb
+├── inf_with_insight.ipynb
+├── prep_dataset_with_insight.ipynb
 │
 └── README.md
 ```
