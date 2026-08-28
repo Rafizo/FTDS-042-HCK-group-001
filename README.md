@@ -26,7 +26,7 @@
 
 Hasil klasifikasi kemudian dapat digunakan sebagai dasar untuk memberikan rekomendasi gaya rambut yang sesuai dengan bentuk wajah pengguna.
 
-Model utama yang digunakan adalah **MobileNetV2** dengan pendekatan **transfer learning** dan **fine-tuning**.
+Model utama yang digunakan adalah **CNN from scratch** dan **fine-tuning**.
 
 ---
 
