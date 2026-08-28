@@ -227,8 +227,9 @@ File utama aplikasi meliputi:
 
 ```text
 app.py
-live_camera.py
-faceshape.py
+eda.py
+inference.py
+model.pkl
 ```
 
 ---
