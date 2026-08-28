@@ -1,7 +1,6 @@
-# Trimatch: Your Style, Your Cut
+# [Trimatch: Your Style, Your Cut](https://trimatch.streamlit.app/)
 ## AI-Based Hairstyle Recommendation for Men Based on Face Shape
 ![alt text](files/Logo_Trimatch.jpeg)
-[Try me!](https://trimatch.streamlit.app/)
 
 # Final Project Student Hacktiv8 Batch HCK-042 FTDS
 
